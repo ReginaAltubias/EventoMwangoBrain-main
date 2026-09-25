@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  :root { --background:60 9% 98%;--foreground:0 0% 9%;--card:0 0% 100%;--card-foreground:0 0% 9%;--popover:0 0% 100%;--popover-foreground:0 0% 9%;--primary:358 79% 47%;--primary-foreground:0 0% 100%;--secondary:0 0% 8%;--secondary-foreground:0 0% 100%;--muted:60 5% 96%;--muted-foreground:0 0% 42%;--accent:0 82% 96%;--accent-foreground:358 79% 40%;--destructive:0 63% 31%;--destructive-foreground:0 0% 100%;--border:20 6% 90%;--input:20 6% 90%;--ring:358 79% 47%;--radius:.625rem;--sidebar-background:0 0% 4%;--sidebar-foreground:0 0% 78%;--sidebar-primary:358 79% 47%;--sidebar-primary-foreground:0 0% 100%;--sidebar-accent:0 0% 8%;--sidebar-accent-foreground:0 0% 100%;--sidebar-border:0 0% 15%;--sidebar-ring:358 79% 47%;--success:142 72% 29%;--success-soft:142 77% 92%;--warning:32 95% 37%;--warning-soft:48 96% 89%;--info:224 76% 48%;--info-soft:214 95% 93%;--destructive-soft:0 93% 94%; }
+  *{@apply border-border}html{scroll-behavior:smooth}body{@apply bg-background text-foreground antialiased;font-family:Inter,system-ui,sans-serif;font-feature-settings:"tnum"}button,a,input,select,textarea{letter-spacing:0}:focus-visible{@apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background}
+}
+@layer components {.surface{@apply rounded-lg border bg-card shadow-sm}.section-head{@apply border-b p-5}.section-head h2,.section-title{@apply border-l-[3px] border-primary pl-3 text-base font-semibold}.section-head p{@apply mt-1 pl-[15px] text-sm text-muted-foreground}.label{@apply text-xs font-medium uppercase text-muted-foreground}}
+.login-pattern,.public-pattern{background-image:radial-gradient(hsl(var(--sidebar-foreground)/.12) 1px,transparent 1px);background-size:24px 24px}
+@media print{aside,header,nav,button{display:none!important}main{padding:0!important}.surface{box-shadow:none;break-inside:avoid}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
