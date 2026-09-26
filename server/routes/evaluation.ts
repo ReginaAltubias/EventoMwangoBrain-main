@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
-import { asyncHandler } from "../lib/http";
+import { asyncHandler } from "../lib/http.js";
 
 export const evaluationRouter = Router();
 

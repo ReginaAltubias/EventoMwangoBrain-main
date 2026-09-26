@@ -2,8 +2,8 @@ import bcrypt from "bcryptjs";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
-import { asyncHandler } from "../lib/http";
-import { publicUser, userSelect } from "../lib/user";
+import { asyncHandler } from "../lib/http.js";
+import { publicUser, userSelect } from "../lib/user.js";
 
 export const authRouter = Router();
 

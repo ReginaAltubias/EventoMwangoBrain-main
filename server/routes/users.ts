@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../prisma.js";
-import { asyncHandler } from "../lib/http";
-import { userSelect } from "../lib/user";
+import { asyncHandler } from "../lib/http.js";
+import { userSelect } from "../lib/user.js";
 
 export const usersRouter = Router();
 
