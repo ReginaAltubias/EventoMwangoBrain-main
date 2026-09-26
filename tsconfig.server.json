@@ -15,5 +15,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["server", "prisma/seed.ts", "api"]
+  "include": [
+    "server/**/*.ts",
+    "api/**/*.ts",
+    "prisma/seed.ts"
+  ]
 }
