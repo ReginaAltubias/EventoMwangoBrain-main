@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { prisma } from "../prisma";
+import { prisma } from "../prisma.js";
 import { asyncHandler } from "../lib/http";
 
 export const notificationsRouter = Router();

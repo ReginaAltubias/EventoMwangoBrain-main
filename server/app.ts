@@ -1,25 +1,28 @@
 import cors from "cors";
 import express from "express";
-import { errorHandler } from "./lib/errorHandler";
-import { authRouter } from "./routes/auth";
-import { contactsRouter } from "./routes/contacts";
-import { evaluationRouter } from "./routes/evaluation";
-import { feedbackRouter } from "./routes/feedback";
-import { followUpsRouter } from "./routes/followUps";
-import { leadsRouter } from "./routes/leads";
-import { meetingsRouter } from "./routes/meetings";
-import { notificationsRouter } from "./routes/notifications";
-import { publicRouter } from "./routes/public";
-import { solutionsRouter } from "./routes/solutions";
-import { stateRouter } from "./routes/state";
-import { usersRouter } from "./routes/users";
+
+import { errorHandler } from "./lib/errorHandler.js";
+import { authRouter } from "./routes/auth.js";
+import { contactsRouter } from "./routes/contacts.js";
+import { evaluationRouter } from "./routes/evaluation.js";
+import { feedbackRouter } from "./routes/feedback.js";
+import { followUpsRouter } from "./routes/followUps.js";
+import { leadsRouter } from "./routes/leads.js";
+import { meetingsRouter } from "./routes/meetings.js";
+import { notificationsRouter } from "./routes/notifications.js";
+import { publicRouter } from "./routes/public.js";
+import { solutionsRouter } from "./routes/solutions.js";
+import { stateRouter } from "./routes/state.js";
+import { usersRouter } from "./routes/users.js";
 
 export const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/health", (_req, res) => res.json({ ok: true }));
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
 
 app.use("/api/auth", authRouter);
 app.use("/api/state", stateRouter);
