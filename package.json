@@ -7,7 +7,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "postinstall": "prisma generate",
+
     "dev": "vite",
     "dev:all": "concurrently -n API,WEB -c blue,green \"npm:server:dev\" \"npm:dev\"",
     "build": "vite build",
