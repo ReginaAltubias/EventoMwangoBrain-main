@@ -28,7 +28,7 @@ export default function PublicPage(){
   const submit=()=>{setSubmitting(true);b.createQrContact({fullName:form.fullName.trim().slice(0,100),company:form.company.trim().slice(0,100),role:form.role.trim().slice(0,80)||undefined,whatsapp:form.whatsapp.trim().slice(0,20)||undefined,email:form.email.trim().slice(0,255)||undefined,solution:selected[0],solutions:selected,wantsDemo:!!demo}).then(()=>setDone(true)).catch(err=>{toast.error(err instanceof Error?err.message:"Erro ao enviar. Tente novamente.");setSubmitting(false)})};
 
   if(done)return <div className="grid min-h-screen lg:grid-cols-2">
-  <section className="login-pattern relative hidden flex-col justify-between bg-sidebar p-12 text-sidebar-accent-foreground lg:flex">
+  <section className="login-pattern bg-black relative hidden flex-col justify-between bg-sidebar p-12 text-sidebar-accent-foreground lg:flex">
     <BrainBrand/>
     <div className="max-w-lg">
       <span className="mb-6 block h-[3px] w-16 bg-sidebar-primary"/>
