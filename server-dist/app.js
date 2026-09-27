@@ -488,7 +488,9 @@ usersRouter.delete(
 var app = express();
 app.use(cors());
 app.use(express.json());
-app.get("/api/health", (_req, res) => res.json({ ok: true }));
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
 app.use("/api/auth", authRouter);
 app.use("/api/state", stateRouter);
 app.use("/api/contacts", contactsRouter);
