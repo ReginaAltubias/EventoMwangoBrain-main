@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft,ArrowRight,Building2,Check,CheckCheck,Code2,Package,Sparkles,Sprout,Trees } from "lucide-react";
+import { ArrowLeft,ArrowRight,Building2,Check,CheckCheck,Code2,ExternalLink,Package,Sparkles,Sprout,Trees } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,8 +27,29 @@ export default function PublicPage(){
   const [submitting,setSubmitting]=useState(false);
   const submit=()=>{setSubmitting(true);b.createQrContact({fullName:form.fullName.trim().slice(0,100),company:form.company.trim().slice(0,100),role:form.role.trim().slice(0,80)||undefined,whatsapp:form.whatsapp.trim().slice(0,20)||undefined,email:form.email.trim().slice(0,255)||undefined,solution:selected[0],solutions:selected,wantsDemo:!!demo}).then(()=>setDone(true)).catch(err=>{toast.error(err instanceof Error?err.message:"Erro ao enviar. Tente novamente.");setSubmitting(false)})};
 
-  if(done)return <div className="grid min-h-screen place-items-center bg-background p-6"><div className="max-w-lg text-center"><span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-success-soft text-success"><CheckCheck/></span><h1 className="mt-6 text-3xl font-semibold">Obrigado por visitar a Mwango Brain.</h1><p className="mt-3 text-muted-foreground">{demo?"A nossa equipa vai contactá-lo para marcar a apresentação ou demonstração.":"A nossa equipa entrará em contacto consigo."}</p></div></div>;
-
+  if(done)return <div className="grid min-h-screen lg:grid-cols-2">
+  <section className="login-pattern relative hidden flex-col justify-between bg-sidebar p-12 text-sidebar-accent-foreground lg:flex">
+    <BrainBrand/>
+    <div className="max-w-lg">
+      <span className="mb-6 block h-[3px] w-16 bg-sidebar-primary"/>
+      <p className="text-sm font-medium uppercase text-sidebar-foreground/50">Angola Hub Summit 2026</p>
+      <h1 className="mt-4 text-5xl font-semibold leading-tight">Transforme contactos em oportunidades.</h1>
+      <p className="mt-5 text-xl text-sidebar-foreground">Let's Brain together.</p>
+    </div>
+    <p className="text-xs text-sidebar-foreground/40">Mwango Brain · Creative & Technology Agency</p>
+  </section>
+  <section className="flex items-center justify-center bg-card p-6">
+    <div className="w-full max-w-sm text-center">
+      <div className="mb-10 lg:hidden"><BrainBrand/></div>
+      <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-success-soft text-success"><CheckCheck/></span>
+      <h1 className="mt-6 text-3xl font-semibold">Obrigado por visitar a Mwango Brain.</h1>
+      <p className="mt-3 text-muted-foreground">{demo?"A nossa equipa vai contactá-lo para marcar a apresentação ou demonstração.":"A nossa equipa entrará em contacto consigo."}</p>
+      <Button asChild size="lg" className="mt-8 w-full">
+        <a href="https://mwangobrain.com/" target="_blank" rel="noopener noreferrer">Visitar site oficial<ExternalLink/></a>
+      </Button>
+    </div>
+  </section>
+</div>;
   return <div className="min-h-screen bg-background">
     <header className="bg-sidebar px-5 py-4"><div className="mx-auto max-w-2xl"><BrainBrand/></div></header>
     <main className="public-pattern mx-auto max-w-2xl px-5 py-8">
