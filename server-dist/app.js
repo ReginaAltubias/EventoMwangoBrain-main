@@ -89,6 +89,34 @@ authRouter.post(
 // server/routes/contacts.ts
 import { Router as Router2 } from "express";
 import { z as z2 } from "zod";
+
+// server/lib/notify.ts
+import { Resend } from "resend";
+var apiKey = process.env.RESEND_API_KEY;
+var resend = apiKey ? new Resend(apiKey) : null;
+var teamEmail = process.env.NOTIFY_EMAIL_TO;
+var fromEmail = process.env.NOTIFY_EMAIL_FROM ?? "onboarding@resend.dev";
+async function notifyNewContact(data) {
+  if (!resend || !teamEmail) return;
+  try {
+    await resend.emails.send({
+      from: fromEmail,
+      to: teamEmail,
+      subject: `Novo contacto: ${data.fullName} \xB7 ${data.company}`,
+      html: `
+        <p><strong>${data.fullName}</strong> \xB7 ${data.company}</p>
+        <p>Origem: ${data.source}</p>
+        <p>Solu\xE7\xF5es de interesse: ${data.solutions.join(", ") || "\u2014"}</p>
+        ${data.whatsapp ? `<p>WhatsApp: ${data.whatsapp}</p>` : ""}
+        ${data.email ? `<p>E-mail: ${data.email}</p>` : ""}
+      `
+    });
+  } catch (err) {
+    console.error("Falha ao enviar notifica\xE7\xE3o por e-mail:", err);
+  }
+}
+
+// server/routes/contacts.ts
 var contactsRouter = Router2();
 var interestSchema = z2.enum(["Alto", "M\xE9dio", "Baixo"]);
 var quickSchema = z2.object({
@@ -131,6 +159,7 @@ contactsRouter.post(
       });
       return { contact, lead };
     });
+    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "Captura r\xE1pida", solutions: [data.mainSolution] });
     res.status(201).json(result);
   })
 );
@@ -184,6 +213,7 @@ contactsRouter.post(
       });
       return { contact, lead };
     });
+    void notifyNewContact({ fullName: data.contact.fullName, company: data.contact.company, source: "Stand", solutions: data.lead.solutions, whatsapp: data.contact.whatsapp, email: data.contact.email });
     res.status(201).json(result);
   })
 );
@@ -238,6 +268,22 @@ feedbackRouter.post(
 import { Router as Router5 } from "express";
 import { z as z5 } from "zod";
 var followUpsRouter = Router5();
+followUpsRouter.post(
+  "/",
+  asyncHandler(async (req, res) => {
+    const schema6 = z5.object({ leadId: z5.string().min(1), action: z5.string().min(1), dueDate: z5.string().min(1) });
+    const data = schema6.parse(req.body);
+    const lead = await prisma.lead.findUnique({ where: { id: data.leadId } });
+    if (!lead) {
+      res.status(404).json({ error: "Lead n\xE3o encontrado" });
+      return;
+    }
+    const followUp = await prisma.followUp.create({
+      data: { leadId: data.leadId, action: data.action, dueDate: new Date(data.dueDate), ownerId: "USR-01", status: "Pendente" }
+    });
+    res.status(201).json(followUp);
+  })
+);
 followUpsRouter.patch(
   "/:id/complete",
   asyncHandler(async (req, res) => {
@@ -403,6 +449,7 @@ publicRouter.post(
       });
       return { contact, lead };
     });
+    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "QR Code", solutions: sols, whatsapp: data.whatsapp, email: data.email });
     res.status(201).json(result);
   })
 );

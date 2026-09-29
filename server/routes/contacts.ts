@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { asyncHandler } from "../lib/http.js";
+import { notifyNewContact } from "../lib/notify.js";
 
 export const contactsRouter = Router();
 
@@ -48,6 +49,7 @@ contactsRouter.post(
       });
       return { contact, lead };
     });
+    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "Captura rápida", solutions: [data.mainSolution] });
     res.status(201).json(result);
   }),
 );
@@ -103,6 +105,7 @@ contactsRouter.post(
       });
       return { contact, lead };
     });
+    void notifyNewContact({ fullName: data.contact.fullName, company: data.contact.company, source: "Stand", solutions: data.lead.solutions, whatsapp: data.contact.whatsapp, email: data.contact.email });
     res.status(201).json(result);
   }),
 );

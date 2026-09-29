@@ -5,6 +5,23 @@ import { asyncHandler } from "../lib/http.js";
 
 export const followUpsRouter = Router();
 
+followUpsRouter.post(
+  "/",
+  asyncHandler(async (req, res) => {
+    const schema = z.object({ leadId: z.string().min(1), action: z.string().min(1), dueDate: z.string().min(1) });
+    const data = schema.parse(req.body);
+    const lead = await prisma.lead.findUnique({ where: { id: data.leadId } });
+    if (!lead) {
+      res.status(404).json({ error: "Lead não encontrado" });
+      return;
+    }
+    const followUp = await prisma.followUp.create({
+      data: { leadId: data.leadId, action: data.action, dueDate: new Date(data.dueDate), ownerId: "USR-01", status: "Pendente" },
+    });
+    res.status(201).json(followUp);
+  }),
+);
+
 followUpsRouter.patch(
   "/:id/complete",
   asyncHandler(async (req, res) => {

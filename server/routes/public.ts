@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { asyncHandler } from "../lib/http.js";
+import { notifyNewContact } from "../lib/notify.js";
 
 export const publicRouter = Router();
 
@@ -73,6 +74,7 @@ publicRouter.post(
       });
       return { contact, lead };
     });
+    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "QR Code", solutions: sols, whatsapp: data.whatsapp, email: data.email });
     res.status(201).json(result);
   }),
 );

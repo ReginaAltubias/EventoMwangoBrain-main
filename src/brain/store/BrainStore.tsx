@@ -8,6 +8,7 @@ type BrainContextValue = BrainState & {
   login:(email:string,password:string)=>Promise<void>; register:(data:{name:string;email:string;role:string;password:string})=>Promise<void>; logout:()=>void; refresh:()=>Promise<void>;
   createQuickContact:(data:QuickContact)=>Promise<string>; createFullContact:(contact:Omit<Contact,"id"|"createdAt"|"createdBy"|"source"|"isComplete">, lead:Omit<Lead,"id"|"contactId"|"ownerId"|"status">)=>Promise<string>;
   addInteraction:(leadId:string, description:string, type?:Interaction["type"])=>Promise<void>; addMeeting:(meeting:Omit<Meeting,"id"|"ownerId">)=>Promise<void>;
+  addFollowUp:(data:{leadId:string; action:FollowUp["action"]; dueDate:string})=>Promise<void>;
   completeFollowUp:(id:string,result:string)=>Promise<void>; updateLeadStatus:(id:string,status:Lead["status"])=>Promise<void>; addFeedback:(data:Omit<VisitorFeedback,"id">)=>Promise<void>;
   createQrContact:(data:Pick<Contact,"fullName"|"company"|"role"|"whatsapp"|"email"> & {solution:Lead["mainSolution"];solutions?:Lead["solutions"];wantsDemo?:boolean})=>Promise<void>;
   markNotification:(id:string)=>Promise<void>; updateEvaluation:(evaluation:BrainState["evaluation"])=>Promise<void>;
@@ -36,6 +37,7 @@ export function BrainProvider({children}:{children:ReactNode}){
   createFullContact:async(contactData,leadData)=>{const result=await api.post<{contact:Contact;lead:Lead}>("/api/contacts/full",{contact:contactData,lead:leadData});await refresh();return result.lead.id},
   addInteraction:async(leadId,description,type="Nota")=>{await api.post(`/api/leads/${leadId}/interactions`,{description,type});await refresh()},
   addMeeting:async meeting=>{await api.post("/api/meetings",meeting);await refresh()},
+  addFollowUp:async data=>{await api.post("/api/follow-ups",data);await refresh()},
   completeFollowUp:async(id,result)=>{await api.patch(`/api/follow-ups/${id}/complete`,{result});await refresh()},
   updateLeadStatus:async(id,status)=>{await api.patch(`/api/leads/${id}/status`,{status});await refresh()},
   addFeedback:async data=>{await api.post("/api/feedback",data);await refresh()},
