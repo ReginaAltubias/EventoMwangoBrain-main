@@ -25,6 +25,7 @@ model Contact {
   email     String?
   sector    String?
   orgType   String?
+  notes     String?
   source    String
   isComplete Boolean @default(false)
   createdBy String

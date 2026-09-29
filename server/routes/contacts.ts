@@ -2,7 +2,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { asyncHandler } from "../lib/http.js";
-import { notifyNewContact } from "../lib/notify.js";
+import { notifyNewContact, notifyClient } from "../lib/notify.js";
+import { sendSms } from "../lib/sms.js";
 
 export const contactsRouter = Router();
 
@@ -14,6 +15,7 @@ const quickSchema = z.object({
   phone: z.string().min(1),
   mainSolution: z.string().min(1),
   interest: interestSchema,
+  notes: z.string().max(500).optional(),
 });
 
 contactsRouter.post(
@@ -26,6 +28,7 @@ contactsRouter.post(
           fullName: data.fullName,
           company: data.company,
           phone: data.phone,
+          notes: data.notes,
           source: "Captura rápida",
           isComplete: false,
           createdBy: "USR-01",
@@ -45,11 +48,30 @@ contactsRouter.post(
         },
       });
       await tx.interaction.create({
-        data: { leadId: lead.id, type: "Nota", description: "Contacto registado por captura rápida.", userId: "USR-01" },
+        data: {
+          leadId: lead.id,
+          type: "Nota",
+          description: `Contacto registado por captura rápida.${data.notes ? ` Obs: ${data.notes}` : ""}`,
+          userId: "USR-01",
+        },
       });
       return { contact, lead };
     });
-    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "Captura rápida", solutions: [data.mainSolution] });
+
+    void notifyNewContact({
+      fullName: data.fullName,
+      company: data.company,
+      source: "Captura rápida",
+      solutions: [data.mainSolution],
+      notes: data.notes,
+    });
+
+    // SMS de confirmação se tiver número (telefone usado como WhatsApp)
+    void sendSms({
+      to: data.phone,
+      body: `Olá ${data.fullName}! Obrigado pelo interesse na Mwango Brain. A nossa equipa vai contactá-lo(a) em breve. — mwangobrain.com`,
+    });
+
     res.status(201).json(result);
   }),
 );
@@ -63,6 +85,7 @@ const fullSchema = z.object({
     email: z.string().optional(),
     sector: z.string().optional(),
     whatsapp: z.string().optional(),
+    notes: z.string().max(500).optional(),
   }),
   lead: z.object({
     solutions: z.array(z.string()).min(1),
@@ -98,14 +121,46 @@ contactsRouter.post(
         },
       });
       await tx.interaction.create({
-        data: { leadId: lead.id, type: "Nota", description: "Contacto completo registado no stand.", userId: "USR-01" },
+        data: {
+          leadId: lead.id,
+          type: "Nota",
+          description: `Contacto completo registado no stand.${data.contact.notes ? ` Obs: ${data.contact.notes}` : ""}`,
+          userId: "USR-01",
+        },
       });
       await tx.followUp.create({
         data: { leadId: lead.id, action: lead.nextAction, dueDate: followUpDate, ownerId: "USR-01", status: "Pendente" },
       });
       return { contact, lead };
     });
-    void notifyNewContact({ fullName: data.contact.fullName, company: data.contact.company, source: "Stand", solutions: data.lead.solutions, whatsapp: data.contact.whatsapp, email: data.contact.email });
+
+    void notifyNewContact({
+      fullName: data.contact.fullName,
+      company: data.contact.company,
+      source: "Stand",
+      solutions: data.lead.solutions,
+      whatsapp: data.contact.whatsapp,
+      email: data.contact.email,
+      notes: data.contact.notes,
+    });
+
+    // E-mail de confirmação ao cliente
+    if (data.contact.email) {
+      void notifyClient({
+        fullName: data.contact.fullName,
+        email: data.contact.email,
+        solutions: data.lead.solutions,
+        wantsDemo: false,
+      });
+    }
+
+    // SMS de confirmação ao cliente
+    const phone = data.contact.whatsapp || data.contact.phone;
+    void sendSms({
+      to: phone,
+      body: `Olá ${data.contact.fullName}! Obrigado pelo interesse na Mwango Brain. A nossa equipa vai contactá-lo(a) em breve. — mwangobrain.com`,
+    });
+
     res.status(201).json(result);
   }),
 );

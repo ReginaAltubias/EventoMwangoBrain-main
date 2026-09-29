@@ -2,7 +2,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma.js";
 import { asyncHandler } from "../lib/http.js";
-import { notifyNewContact } from "../lib/notify.js";
+import { notifyNewContact, notifyClient } from "../lib/notify.js";
+import { sendSms } from "../lib/sms.js";
 
 export const publicRouter = Router();
 
@@ -15,6 +16,7 @@ const schema = z.object({
   solution: z.string().min(1),
   solutions: z.array(z.string()).optional(),
   wantsDemo: z.boolean().optional(),
+  notes: z.string().max(500).optional(),
 });
 
 publicRouter.post(
@@ -24,6 +26,7 @@ publicRouter.post(
     const sols = data.solutions?.length ? data.solutions : [data.solution];
     const demo = !!data.wantsDemo;
     const followUpDate = new Date(Date.now() + 86400000);
+
     const result = await prisma.$transaction(async (tx) => {
       const contact = await tx.contact.create({
         data: {
@@ -33,6 +36,7 @@ publicRouter.post(
           phone: data.whatsapp ?? "",
           whatsapp: data.whatsapp,
           email: data.email,
+          notes: data.notes,
           source: "QR Code",
           isComplete: true,
           createdBy: "public",
@@ -56,7 +60,7 @@ publicRouter.post(
         data: {
           leadId: lead.id,
           type: "Nota",
-          description: `Registo pelo QR Code${demo ? " · pediu apresentação ou demonstração" : ""}.`,
+          description: `Registo pelo QR Code${demo ? " · pediu apresentação ou demonstração" : ""}${data.notes ? ` · Obs: ${data.notes}` : ""}.`,
           userId: "USR-01",
         },
       });
@@ -74,7 +78,38 @@ publicRouter.post(
       });
       return { contact, lead };
     });
-    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "QR Code", solutions: sols, whatsapp: data.whatsapp, email: data.email });
+
+    // Notificações assíncronas — nunca bloqueiam a resposta
+    void notifyNewContact({
+      fullName: data.fullName,
+      company: data.company,
+      source: "QR Code",
+      solutions: sols,
+      whatsapp: data.whatsapp,
+      email: data.email,
+      notes: data.notes,
+    });
+
+    // E-mail de confirmação ao cliente
+    if (data.email) {
+      void notifyClient({
+        fullName: data.fullName,
+        email: data.email,
+        solutions: sols,
+        wantsDemo: demo,
+      });
+    }
+
+    // SMS de confirmação ao cliente via WhatsApp/Twilio
+    if (data.whatsapp) {
+      void sendSms({
+        to: data.whatsapp,
+        body: demo
+          ? `Olá ${data.fullName}! Obrigado por visitar a Mwango Brain no Angola Hub Summit 2026. A nossa equipa vai contactá-lo(a) para agendar a demonstração. — mwangobrain.com`
+          : `Olá ${data.fullName}! Obrigado por visitar a Mwango Brain no Angola Hub Summit 2026. Entraremos em contacto consigo em breve. — mwangobrain.com`,
+      });
+    }
+
     res.status(201).json(result);
   }),
 );

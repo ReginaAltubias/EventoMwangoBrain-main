@@ -109,10 +109,68 @@ async function notifyNewContact(data) {
         <p>Solu\xE7\xF5es de interesse: ${data.solutions.join(", ") || "\u2014"}</p>
         ${data.whatsapp ? `<p>WhatsApp: ${data.whatsapp}</p>` : ""}
         ${data.email ? `<p>E-mail: ${data.email}</p>` : ""}
+        ${data.notes ? `<p>Observa\xE7\xE3o: ${data.notes}</p>` : ""}
       `
     });
   } catch (err) {
-    console.error("Falha ao enviar notifica\xE7\xE3o por e-mail:", err);
+    console.error("Falha ao enviar notifica\xE7\xE3o por e-mail \xE0 equipa:", err);
+  }
+}
+async function notifyClient(data) {
+  if (!resend || !data.email) return;
+  try {
+    await resend.emails.send({
+      from: fromEmail,
+      to: data.email,
+      subject: "Obrigado por visitar a Mwango Brain \u{1F9E0}",
+      html: `
+        <div style="font-family:sans-serif;max-width:520px;margin:auto;color:#111">
+          <h2 style="color:#6c2bd9">Ol\xE1, ${data.fullName}!</h2>
+          <p>Obrigado por passar pelo nosso stand no <strong>Angola Hub Summit 2026</strong>.</p>
+          <p>Regist\xE1mos o seu interesse em: <strong>${data.solutions.join(", ")}</strong>.</p>
+          ${data.wantsDemo ? "<p>A nossa equipa ir\xE1 contact\xE1-lo(a) brevemente para agendar uma apresenta\xE7\xE3o ou demonstra\xE7\xE3o.</p>" : "<p>A nossa equipa entrar\xE1 em contacto consigo em breve.</p>"}
+          <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb"/>
+          <p style="font-size:12px;color:#6b7280">
+            Mwango Brain \xB7 Creative &amp; Technology Agency<br/>
+            <a href="https://mwangobrain.com" style="color:#6c2bd9">mwangobrain.com</a>
+          </p>
+        </div>
+      `
+    });
+  } catch (err) {
+    console.error("Falha ao enviar e-mail de confirma\xE7\xE3o ao cliente:", err);
+  }
+}
+
+// server/lib/sms.ts
+var accountSid = process.env.TWILIO_ACCOUNT_SID;
+var authToken = process.env.TWILIO_AUTH_TOKEN;
+var fromNumber = process.env.TWILIO_FROM;
+async function sendSms(payload) {
+  if (!accountSid || !authToken || !fromNumber || !payload.to) return;
+  const toNumber = payload.to.replace(/\s+/g, "").replace(/^00/, "+");
+  if (!toNumber.startsWith("+")) return;
+  try {
+    const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+    const body = new URLSearchParams({
+      From: fromNumber,
+      To: toNumber,
+      Body: payload.body
+    });
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: "Basic " + Buffer.from(`${accountSid}:${authToken}`).toString("base64"),
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: body.toString()
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("Twilio SMS erro:", err);
+    }
+  } catch (err) {
+    console.error("Falha ao enviar SMS:", err);
   }
 }
 
@@ -124,7 +182,8 @@ var quickSchema = z2.object({
   company: z2.string().min(1),
   phone: z2.string().min(1),
   mainSolution: z2.string().min(1),
-  interest: interestSchema
+  interest: interestSchema,
+  notes: z2.string().max(500).optional()
 });
 contactsRouter.post(
   "/quick",
@@ -136,6 +195,7 @@ contactsRouter.post(
           fullName: data.fullName,
           company: data.company,
           phone: data.phone,
+          notes: data.notes,
           source: "Captura r\xE1pida",
           isComplete: false,
           createdBy: "USR-01"
@@ -155,11 +215,26 @@ contactsRouter.post(
         }
       });
       await tx.interaction.create({
-        data: { leadId: lead.id, type: "Nota", description: "Contacto registado por captura r\xE1pida.", userId: "USR-01" }
+        data: {
+          leadId: lead.id,
+          type: "Nota",
+          description: `Contacto registado por captura r\xE1pida.${data.notes ? ` Obs: ${data.notes}` : ""}`,
+          userId: "USR-01"
+        }
       });
       return { contact, lead };
     });
-    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "Captura r\xE1pida", solutions: [data.mainSolution] });
+    void notifyNewContact({
+      fullName: data.fullName,
+      company: data.company,
+      source: "Captura r\xE1pida",
+      solutions: [data.mainSolution],
+      notes: data.notes
+    });
+    void sendSms({
+      to: data.phone,
+      body: `Ol\xE1 ${data.fullName}! Obrigado pelo interesse na Mwango Brain. A nossa equipa vai contact\xE1-lo(a) em breve. \u2014 mwangobrain.com`
+    });
     res.status(201).json(result);
   })
 );
@@ -171,7 +246,8 @@ var fullSchema = z2.object({
     role: z2.string().optional(),
     email: z2.string().optional(),
     sector: z2.string().optional(),
-    whatsapp: z2.string().optional()
+    whatsapp: z2.string().optional(),
+    notes: z2.string().max(500).optional()
   }),
   lead: z2.object({
     solutions: z2.array(z2.string()).min(1),
@@ -206,14 +282,40 @@ contactsRouter.post(
         }
       });
       await tx.interaction.create({
-        data: { leadId: lead.id, type: "Nota", description: "Contacto completo registado no stand.", userId: "USR-01" }
+        data: {
+          leadId: lead.id,
+          type: "Nota",
+          description: `Contacto completo registado no stand.${data.contact.notes ? ` Obs: ${data.contact.notes}` : ""}`,
+          userId: "USR-01"
+        }
       });
       await tx.followUp.create({
         data: { leadId: lead.id, action: lead.nextAction, dueDate: followUpDate, ownerId: "USR-01", status: "Pendente" }
       });
       return { contact, lead };
     });
-    void notifyNewContact({ fullName: data.contact.fullName, company: data.contact.company, source: "Stand", solutions: data.lead.solutions, whatsapp: data.contact.whatsapp, email: data.contact.email });
+    void notifyNewContact({
+      fullName: data.contact.fullName,
+      company: data.contact.company,
+      source: "Stand",
+      solutions: data.lead.solutions,
+      whatsapp: data.contact.whatsapp,
+      email: data.contact.email,
+      notes: data.contact.notes
+    });
+    if (data.contact.email) {
+      void notifyClient({
+        fullName: data.contact.fullName,
+        email: data.contact.email,
+        solutions: data.lead.solutions,
+        wantsDemo: false
+      });
+    }
+    const phone = data.contact.whatsapp || data.contact.phone;
+    void sendSms({
+      to: phone,
+      body: `Ol\xE1 ${data.contact.fullName}! Obrigado pelo interesse na Mwango Brain. A nossa equipa vai contact\xE1-lo(a) em breve. \u2014 mwangobrain.com`
+    });
     res.status(201).json(result);
   })
 );
@@ -390,7 +492,8 @@ var schema4 = z8.object({
   email: z8.string().max(255).optional(),
   solution: z8.string().min(1),
   solutions: z8.array(z8.string()).optional(),
-  wantsDemo: z8.boolean().optional()
+  wantsDemo: z8.boolean().optional(),
+  notes: z8.string().max(500).optional()
 });
 publicRouter.post(
   "/qr-contact",
@@ -408,6 +511,7 @@ publicRouter.post(
           phone: data.whatsapp ?? "",
           whatsapp: data.whatsapp,
           email: data.email,
+          notes: data.notes,
           source: "QR Code",
           isComplete: true,
           createdBy: "public"
@@ -431,7 +535,7 @@ publicRouter.post(
         data: {
           leadId: lead.id,
           type: "Nota",
-          description: `Registo pelo QR Code${demo ? " \xB7 pediu apresenta\xE7\xE3o ou demonstra\xE7\xE3o" : ""}.`,
+          description: `Registo pelo QR Code${demo ? " \xB7 pediu apresenta\xE7\xE3o ou demonstra\xE7\xE3o" : ""}${data.notes ? ` \xB7 Obs: ${data.notes}` : ""}.`,
           userId: "USR-01"
         }
       });
@@ -449,7 +553,29 @@ publicRouter.post(
       });
       return { contact, lead };
     });
-    void notifyNewContact({ fullName: data.fullName, company: data.company, source: "QR Code", solutions: sols, whatsapp: data.whatsapp, email: data.email });
+    void notifyNewContact({
+      fullName: data.fullName,
+      company: data.company,
+      source: "QR Code",
+      solutions: sols,
+      whatsapp: data.whatsapp,
+      email: data.email,
+      notes: data.notes
+    });
+    if (data.email) {
+      void notifyClient({
+        fullName: data.fullName,
+        email: data.email,
+        solutions: sols,
+        wantsDemo: demo
+      });
+    }
+    if (data.whatsapp) {
+      void sendSms({
+        to: data.whatsapp,
+        body: demo ? `Ol\xE1 ${data.fullName}! Obrigado por visitar a Mwango Brain no Angola Hub Summit 2026. A nossa equipa vai contact\xE1-lo(a) para agendar a demonstra\xE7\xE3o. \u2014 mwangobrain.com` : `Ol\xE1 ${data.fullName}! Obrigado por visitar a Mwango Brain no Angola Hub Summit 2026. Entraremos em contacto consigo em breve. \u2014 mwangobrain.com`
+      });
+    }
     res.status(201).json(result);
   })
 );

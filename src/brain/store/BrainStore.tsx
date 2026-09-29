@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { api } from "../lib/api";
 import type { BrainState, BrainUser, Contact, FollowUp, Interaction, Lead, Meeting, VisitorFeedback } from "../types";
 
-type QuickContact = Pick<Contact,"fullName"|"company"|"phone"> & { mainSolution: Lead["mainSolution"]; interest: Lead["interest"] };
+type QuickContact = Pick<Contact,"fullName"|"company"|"phone"> & { mainSolution: Lead["mainSolution"]; interest: Lead["interest"]; notes?: string };
 type BrainContextValue = BrainState & {
   authenticated:boolean; loading:boolean; currentUser:BrainUser|null;
   login:(email:string,password:string)=>Promise<void>; register:(data:{name:string;email:string;role:string;password:string})=>Promise<void>; logout:()=>void; refresh:()=>Promise<void>;
@@ -10,7 +10,7 @@ type BrainContextValue = BrainState & {
   addInteraction:(leadId:string, description:string, type?:Interaction["type"])=>Promise<void>; addMeeting:(meeting:Omit<Meeting,"id"|"ownerId">)=>Promise<void>;
   addFollowUp:(data:{leadId:string; action:FollowUp["action"]; dueDate:string})=>Promise<void>;
   completeFollowUp:(id:string,result:string)=>Promise<void>; updateLeadStatus:(id:string,status:Lead["status"])=>Promise<void>; addFeedback:(data:Omit<VisitorFeedback,"id">)=>Promise<void>;
-  createQrContact:(data:Pick<Contact,"fullName"|"company"|"role"|"whatsapp"|"email"> & {solution:Lead["mainSolution"];solutions?:Lead["solutions"];wantsDemo?:boolean})=>Promise<void>;
+  createQrContact:(data:Pick<Contact,"fullName"|"company"|"role"|"whatsapp"|"email"> & {solution:Lead["mainSolution"];solutions?:Lead["solutions"];wantsDemo?:boolean;notes?:string})=>Promise<void>;
   markNotification:(id:string)=>Promise<void>; updateEvaluation:(evaluation:BrainState["evaluation"])=>Promise<void>;
   addSolution:(data:{name:string;subtitle:string})=>Promise<void>; updateSolution:(id:string,data:{name:string;subtitle:string})=>Promise<void>; deleteSolution:(id:string)=>Promise<void>;
   approveUser:(id:string)=>Promise<void>; rejectUser:(id:string)=>Promise<void>;
