@@ -1,4 +1,4 @@
-# Roadmap — Mwango Brain · Hub Summit 2026
+# Roadmap — Mwango Brain · MwangoBrain 2026
 
 - [x] Identidade Corporate Tech Noir, login e layout responsivo
 - [x] Store persistente, serviços e dados mock coerentes

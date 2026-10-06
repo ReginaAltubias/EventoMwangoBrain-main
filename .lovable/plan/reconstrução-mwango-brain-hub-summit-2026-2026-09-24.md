@@ -1,4 +1,4 @@
-# Reconstrução: Mwango Brain — Hub Summit 2026
+# Reconstrução: Mwango Brain — MwangoBrain 2026
 
 ## Objectivo
 
