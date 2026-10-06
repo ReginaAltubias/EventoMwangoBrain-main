@@ -1,0 +1,747 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Mwango Brain API Documentation",
+        "description": "Documentação das APIs RESTful do sistema Mwango Brain - Gestão de Eventos, Leads e Contactos (Laravel 13 & Neon PostgreSQL)",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Servidor Local / Dev"
+        }
+    ],
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Autenticação de utilizador",
+                "operationId": "login",
+                "responses": {
+                    "200": {
+                        "description": "Login efetuado com sucesso"
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas"
+                    }
+                }
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Registo de novo utilizador",
+                "operationId": "register",
+                "responses": {
+                    "201": {
+                        "description": "Utilizador registado (pendente de aprovação)"
+                    }
+                }
+            }
+        },
+        "/api/contacts": {
+            "get": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Listar todos os contactos",
+                "operationId": "getContacts",
+                "responses": {
+                    "200": {
+                        "description": "Lista de contactos"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Criar novo contacto",
+                "operationId": "storeContact",
+                "responses": {
+                    "201": {
+                        "description": "Contacto criado com sucesso"
+                    }
+                }
+            }
+        },
+        "/api/contacts/{id}": {
+            "get": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Obter contacto por ID",
+                "operationId": "getContactById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contacto encontrado"
+                    },
+                    "404": {
+                        "description": "Contacto não encontrado"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Atualizar contacto existente",
+                "operationId": "updateContact",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contacto atualizado"
+                    },
+                    "404": {
+                        "description": "Contacto não encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Eliminar contacto",
+                "operationId": "deleteContact",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contacto eliminado"
+                    }
+                }
+            }
+        },
+        "/api/contacts/quick": {
+            "post": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Registo Rápido de Contacto e Lead",
+                "operationId": "quickContact",
+                "responses": {
+                    "201": {
+                        "description": "Contacto e Lead criados com sucesso"
+                    }
+                }
+            }
+        },
+        "/api/contacts/full": {
+            "post": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Registo Completo de Contacto e Lead",
+                "operationId": "fullContact",
+                "responses": {
+                    "201": {
+                        "description": "Contacto e Lead criados com sucesso"
+                    }
+                }
+            }
+        },
+        "/api/public/qr-contact": {
+            "post": {
+                "tags": [
+                    "Contacts"
+                ],
+                "summary": "Captura Pública por QR Code",
+                "operationId": "qrContact",
+                "responses": {
+                    "201": {
+                        "description": "Contacto QR Code registado"
+                    }
+                }
+            }
+        },
+        "/api/evaluation": {
+            "get": {
+                "tags": [
+                    "Evaluation"
+                ],
+                "summary": "Obter avaliação interna do evento",
+                "operationId": "getEvaluation",
+                "responses": {
+                    "200": {
+                        "description": "Dados da avaliação interna"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Evaluation"
+                ],
+                "summary": "Guardar ou atualizar avaliação interna",
+                "operationId": "saveEvaluation",
+                "responses": {
+                    "200": {
+                        "description": "Avaliação atualizada"
+                    }
+                }
+            }
+        },
+        "/api/follow-ups": {
+            "get": {
+                "tags": [
+                    "FollowUps"
+                ],
+                "summary": "Listar todos os follow-ups",
+                "operationId": "getFollowUps",
+                "responses": {
+                    "200": {
+                        "description": "Lista de follow-ups"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "FollowUps"
+                ],
+                "summary": "Criar novo follow-up",
+                "operationId": "storeFollowUp",
+                "responses": {
+                    "201": {
+                        "description": "Follow-up criado"
+                    }
+                }
+            }
+        },
+        "/api/follow-ups/{id}/complete": {
+            "patch": {
+                "tags": [
+                    "FollowUps"
+                ],
+                "summary": "Concluir follow-up",
+                "operationId": "completeFollowUp",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Follow-up marcado como concluído"
+                    }
+                }
+            }
+        },
+        "/api/follow-ups/{id}": {
+            "put": {
+                "tags": [
+                    "FollowUps"
+                ],
+                "summary": "Atualizar estado do follow-up",
+                "operationId": "updateFollowUp",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Follow-up atualizado"
+                    }
+                }
+            }
+        },
+        "/api/interactions": {
+            "get": {
+                "tags": [
+                    "Interactions"
+                ],
+                "summary": "Listar todas as interacções",
+                "operationId": "getInteractions",
+                "responses": {
+                    "200": {
+                        "description": "Lista de interacções"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Interactions"
+                ],
+                "summary": "Registar nova interacção",
+                "operationId": "storeInteraction",
+                "responses": {
+                    "201": {
+                        "description": "Interacção registada"
+                    }
+                }
+            }
+        },
+        "/api/leads/{leadId}/interactions": {
+            "post": {
+                "tags": [
+                    "Interactions"
+                ],
+                "summary": "Registar nova interacção para uma lead específica",
+                "operationId": "storeInteractionForLead",
+                "parameters": [
+                    {
+                        "name": "leadId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Interacção registada com sucesso"
+                    }
+                }
+            }
+        },
+        "/api/leads": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Listar todas as leads",
+                "operationId": "getLeads",
+                "responses": {
+                    "200": {
+                        "description": "Lista de leads"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Criar nova lead",
+                "operationId": "storeLead",
+                "responses": {
+                    "201": {
+                        "description": "Lead criada com sucesso"
+                    }
+                }
+            }
+        },
+        "/api/leads/{id}": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Obter detalhes da lead por ID",
+                "operationId": "getLeadById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead encontrada"
+                    },
+                    "404": {
+                        "description": "Lead não encontrada"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Atualizar lead",
+                "operationId": "updateLead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead atualizada"
+                    },
+                    "404": {
+                        "description": "Lead não encontrada"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Remover lead",
+                "operationId": "deleteLead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead removida"
+                    }
+                }
+            }
+        },
+        "/api/leads/{id}/status": {
+            "patch": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Atualizar estado da lead",
+                "operationId": "updateLeadStatus",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado da lead atualizado"
+                    }
+                }
+            }
+        },
+        "/api/meetings": {
+            "get": {
+                "tags": [
+                    "Meetings"
+                ],
+                "summary": "Listar reuniões agendadas",
+                "operationId": "getMeetings",
+                "responses": {
+                    "200": {
+                        "description": "Lista de reuniões"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Meetings"
+                ],
+                "summary": "Agendar nova reunião",
+                "operationId": "storeMeeting",
+                "responses": {
+                    "201": {
+                        "description": "Reunião criada com sucesso"
+                    }
+                }
+            }
+        },
+        "/api/notifications": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Listar notificações do utilizador",
+                "operationId": "getNotifications",
+                "responses": {
+                    "200": {
+                        "description": "Lista de notificações"
+                    }
+                }
+            }
+        },
+        "/api/notifications/{id}/read": {
+            "patch": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Marcar notificação como lida",
+                "operationId": "markNotificationRead",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notificação marcada como lida"
+                    }
+                }
+            }
+        },
+        "/api/solutions": {
+            "get": {
+                "tags": [
+                    "Solutions"
+                ],
+                "summary": "Listar catálogo de soluções",
+                "operationId": "getSolutions",
+                "responses": {
+                    "200": {
+                        "description": "Lista de soluções"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Solutions"
+                ],
+                "summary": "Criar nova solução",
+                "operationId": "storeSolution",
+                "responses": {
+                    "201": {
+                        "description": "Solução criada"
+                    }
+                }
+            }
+        },
+        "/api/solutions/{id}": {
+            "delete": {
+                "tags": [
+                    "Solutions"
+                ],
+                "summary": "Remover solução",
+                "operationId": "deleteSolution",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Solução removida"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Solutions"
+                ],
+                "summary": "Atualizar solução",
+                "operationId": "updateSolution",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Solução atualizada"
+                    }
+                }
+            }
+        },
+        "/api/state": {
+            "get": {
+                "tags": [
+                    "State"
+                ],
+                "summary": "Obter o estado completo da aplicação",
+                "operationId": "getState",
+                "responses": {
+                    "200": {
+                        "description": "Operação bem-sucedida"
+                    }
+                }
+            }
+        },
+        "/api/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Listar todos os utilizadores da equipa",
+                "operationId": "getUsers",
+                "responses": {
+                    "200": {
+                        "description": "Lista de utilizadores"
+                    }
+                }
+            }
+        },
+        "/api/users/{id}/approve": {
+            "patch": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Aprovar conta de utilizador pendente",
+                "operationId": "approveUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilizador aprovado"
+                    }
+                }
+            }
+        },
+        "/api/users/{id}": {
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Rejeitar ou remover utilizador",
+                "operationId": "rejectUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilizador removido"
+                    }
+                }
+            }
+        },
+        "/api/feedback": {
+            "get": {
+                "tags": [
+                    "Feedback"
+                ],
+                "summary": "Listar todos os feedbacks de visitantes",
+                "operationId": "getFeedback",
+                "responses": {
+                    "200": {
+                        "description": "Lista de feedbacks"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Feedback"
+                ],
+                "summary": "Submeter feedback de visitante",
+                "operationId": "storeFeedback",
+                "responses": {
+                    "201": {
+                        "description": "Feedback submetido com sucesso"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "State",
+            "description": "Estado completo da aplicação"
+        },
+        {
+            "name": "Contacts",
+            "description": "Gestão de Contactos"
+        },
+        {
+            "name": "Leads",
+            "description": "Gestão de Leads Comercial"
+        },
+        {
+            "name": "Interactions",
+            "description": "Histórico de Interacções com Leads"
+        },
+        {
+            "name": "FollowUps",
+            "description": "Acompanhamento e Follow-ups"
+        },
+        {
+            "name": "Meetings",
+            "description": "Agendamento de Reuniões"
+        },
+        {
+            "name": "Feedback",
+            "description": "Avaliação dos Visitantes"
+        },
+        {
+            "name": "Solutions",
+            "description": "Catálogo de Soluções"
+        },
+        {
+            "name": "Users",
+            "description": "Gestão de Utilizadores"
+        },
+        {
+            "name": "Notifications",
+            "description": "Notificações do Sistema"
+        },
+        {
+            "name": "Evaluation",
+            "description": "Avaliação Interna do Evento"
+        }
+    ]
+}

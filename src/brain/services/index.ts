@@ -1,3 +1,10 @@
-import { initialState } from "../data/mock";
-const wait=<T,>(value:T)=>new Promise<T>(resolve=>window.setTimeout(()=>resolve(value),180));
-export const brainService={getContacts:()=>wait(initialState.contacts),getLeads:()=>wait(initialState.leads),getFollowUps:()=>wait(initialState.followUps),getMeetings:()=>wait(initialState.meetings),getFeedback:()=>wait(initialState.feedback)};
+import { api } from "../lib/api";
+import type { Contact, FollowUp, Lead, Meeting, VisitorFeedback } from "../types";
+
+export const brainService = {
+  getContacts: () => api.get<Contact[]>("/api/contacts"),
+  getLeads: () => api.get<Lead[]>("/api/leads"),
+  getFollowUps: () => api.get<FollowUp[]>("/api/follow-ups"),
+  getMeetings: () => api.get<Meeting[]>("/api/meetings"),
+  getFeedback: () => api.get<VisitorFeedback[]>("/api/feedback"),
+};
