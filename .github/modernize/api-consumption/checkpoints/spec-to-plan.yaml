@@ -1,0 +1,131 @@
+metadata:
+  generated: "2026-10-06"
+  source_spec: "OpenAPI 3.0 enviado na solicitação (Pasted text #1.txt)"
+  target_plan: ".github/modernize/api-consumption/plan.md"
+
+summary:
+  total_requirements: 11
+  covered_requirements: 11
+  missing_requirements: 0
+  coverage_percentage: 100.0
+
+requirements:
+  - req_id: "REQ-API-001"
+    req_description: "Consumir login e registo de utilizadores"
+    priority: "P1"
+    plan_mapping:
+      phase: "Phase-3"
+      phase_name: "US1: acesso e carregamento inicial"
+      items:
+        - item_id: "3.1"
+          description: "Autenticar, registar e carregar estado"
+    notes: "2 operações."
+  - req_id: "REQ-API-002"
+    req_description: "Consumir CRUD de contactos e os três fluxos de captura"
+    priority: "P1"
+    plan_mapping:
+      phase: "Phase-4"
+      phase_name: "US2: contactos e leads"
+      items:
+        - item_id: "4.1"
+          description: "Consumir contactos e captura pública"
+    notes: "8 operações."
+  - req_id: "REQ-API-003"
+    req_description: "Consumir CRUD, detalhe e estado de leads"
+    priority: "P1"
+    plan_mapping:
+      phase: "Phase-4"
+      phase_name: "US2: contactos e leads"
+      items:
+        - item_id: "4.2"
+          description: "Consumir leads, detalhe e estado"
+    notes: "6 operações."
+  - req_id: "REQ-API-004"
+    req_description: "Consumir interacções globais e associadas a lead"
+    priority: "P1"
+    plan_mapping:
+      phase: "Phase-5"
+      phase_name: "US3: actividade comercial"
+      items:
+        - item_id: "5.1"
+          description: "Consumir interacções, follow-ups e reuniões"
+    notes: "3 operações."
+  - req_id: "REQ-API-005"
+    req_description: "Consumir ciclo completo de follow-ups"
+    priority: "P1"
+    plan_mapping:
+      phase: "Phase-5"
+      phase_name: "US3: actividade comercial"
+      items:
+        - item_id: "5.1"
+          description: "Consumir interacções, follow-ups e reuniões"
+    notes: "4 operações."
+  - req_id: "REQ-API-006"
+    req_description: "Consumir listagem e criação de reuniões"
+    priority: "P1"
+    plan_mapping:
+      phase: "Phase-5"
+      phase_name: "US3: actividade comercial"
+      items:
+        - item_id: "5.1"
+          description: "Consumir interacções, follow-ups e reuniões"
+    notes: "2 operações."
+  - req_id: "REQ-API-007"
+    req_description: "Consumir avaliação interna e feedback de visitantes"
+    priority: "P2"
+    plan_mapping:
+      phase: "Phase-6"
+      phase_name: "US4: avaliação e feedback"
+      items:
+        - item_id: "6.1"
+          description: "Consumir avaliação interna e feedback de visitantes"
+    notes: "4 operações."
+  - req_id: "REQ-API-008"
+    req_description: "Consumir listagem e leitura de notificações"
+    priority: "P2"
+    plan_mapping:
+      phase: "Phase-7"
+      phase_name: "US5: administração, notificações e catálogo"
+      items:
+        - item_id: "7.1"
+          description: "Consumir notificações, soluções e utilizadores"
+    notes: "2 operações."
+  - req_id: "REQ-API-009"
+    req_description: "Consumir CRUD documentado do catálogo de soluções"
+    priority: "P2"
+    plan_mapping:
+      phase: "Phase-7"
+      phase_name: "US5: administração, notificações e catálogo"
+      items:
+        - item_id: "7.1"
+          description: "Consumir notificações, soluções e utilizadores"
+    notes: "4 operações."
+  - req_id: "REQ-API-010"
+    req_description: "Consumir listagem, aprovação e remoção de utilizadores"
+    priority: "P2"
+    plan_mapping:
+      phase: "Phase-7"
+      phase_name: "US5: administração, notificações e catálogo"
+      items:
+        - item_id: "7.1"
+          description: "Consumir notificações, soluções e utilizadores"
+    notes: "3 operações."
+  - req_id: "REQ-API-011"
+    req_description: "Consumir estado agregado da aplicação"
+    priority: "P1"
+    plan_mapping:
+      phase: "Phase-3"
+      phase_name: "US1: acesso e carregamento inicial"
+      items:
+        - item_id: "3.1"
+          description: "Autenticar, registar e carregar estado"
+    notes: "1 operação; o estado agregado não substitui os endpoints por domínio."
+
+missing_requirements: []
+orphan_plan_items: []
+
+validation:
+  passed: true
+  errors: []
+  warnings:
+    - "Os esquemas de payload, resposta e autenticação não estão definidos no OpenAPI; resolver em Plan 1.1."

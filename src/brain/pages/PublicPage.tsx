@@ -51,7 +51,7 @@ export default function PublicPage(){
     <BrainBrand/>
     <div className="max-w-lg">
       <span className="mb-6 block h-[3px] w-16 bg-sidebar-primary"/>
-      <p className="text-sm font-medium uppercase text-sidebar-foreground/50">Angola Hub Summit 2026</p>
+      <p className="text-sm font-medium uppercase text-sidebar-foreground/50">Eventos MwangoBrain 2026</p>
       <h1 className="mt-4 text-5xl font-semibold leading-tight">Transforme contactos em oportunidades.</h1>
       <p className="mt-5 text-xl text-sidebar-foreground">Let's Brain together.</p>
     </div>
@@ -75,7 +75,7 @@ export default function PublicPage(){
   return <div className="min-h-screen bg-background">
     <header className="bg-sidebar px-5 py-4"><div className="mx-auto max-w-2xl"><BrainBrand/></div></header>
     <main className="public-pattern mx-auto max-w-2xl px-5 py-8">
-      <p className="text-xs font-medium uppercase tracking-wide text-primary">Angola Hub Summit 2026</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-primary">Eventos MwangoBrain 2026</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">Conheça as soluções da Mwango Brain</h1>
       <ol className="mt-6 flex gap-2" aria-label="Passos">{steps.map((s,i)=><li key={s} className="flex-1"><div className={cn("h-1 rounded-full",i<=step?"bg-primary":"bg-border")}/><span className={cn("mt-2 block text-xs",i===step?"font-medium text-foreground":"text-muted-foreground")}>{s}</span></li>)}</ol>
 

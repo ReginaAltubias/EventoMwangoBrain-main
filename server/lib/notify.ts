@@ -60,7 +60,7 @@ export async function notifyClient(data: ClientConfirmationData): Promise<void> 
       html: `
         <div style="font-family:sans-serif;max-width:520px;margin:auto;color:#111">
           <h2 style="color:#6c2bd9">Olá, ${data.fullName}!</h2>
-          <p>Obrigado por passar pelo nosso stand no <strong>Angola Hub Summit 2026</strong>.</p>
+          <p>Obrigado por passar pelo nosso stand no <strong>Eventos MwangoBrain 2026</strong>.</p>
           <p>Registámos o seu interesse em: <strong>${data.solutions.join(", ")}</strong>.</p>
           ${data.wantsDemo
             ? "<p>A nossa equipa irá contactá-lo(a) brevemente para agendar uma apresentação ou demonstração.</p>"

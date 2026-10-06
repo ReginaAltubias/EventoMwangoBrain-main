@@ -1,0 +1,86 @@
+batch_id: "B10"
+completed_tasks: []
+in_progress_tasks: ["T021"]
+blocked_tasks: ["T021 approval endpoint"]
+required_endpoints:
+  - method: "DELETE"
+    path: "/api/users/{id}"
+    source: "User request"
+    status: "implemented"
+endpoint_probes: []
+files_changed:
+  T021:
+    - file: "src/brain/services/index.ts"
+      change_type: "modified"
+      description: "Added DELETE /api/users/{id}, URL-encoding string or numeric user IDs."
+    - file: "src/brain/store/BrainStore.tsx"
+      change_type: "modified"
+      description: "Deletes remotely, updates the users collection only on success, and clears local session if the deleted account is current."
+    - file: "src/brain/pages/EventPages.tsx"
+      change_type: "modified"
+      description: "Added a delete button per user, destructive-action confirmation, pending state, and visible success/error feedback."
+    - file: "src/brain/lib/api.test.ts"
+      change_type: "modified"
+      description: "Added a mocked-fetch contract test for DELETE method and user ID endpoint."
+    - file: ".github/modernize/api-consumption/plan.md"
+      change_type: "modified"
+      description: "Recorded implemented list/delete flows and the still-blocked approval endpoint."
+    - file: ".github/modernize/api-consumption/research.md"
+      change_type: "modified"
+      description: "Documented confirmed explicit user request and delete UI safeguards."
+    - file: ".github/modernize/api-consumption/checkpoints/tasks-to-impl.yaml"
+      change_type: "modified"
+      description: "Updated T021 remaining scope to approval only."
+blocked_reasons:
+  - task_id: "T021"
+    reason: "User approval remains blocked because PATCH /api/users/{id}/approve previously returned HTTP 500 due to a missing database status column. This task did not retry it."
+evidence_mapping:
+  T021:
+    - upstream: "User request: add delete button on users page for /api/users/{id}"
+      output: "src/brain/pages/EventPages.tsx"
+      evidence: "Each listed user has a delete action which requires confirmation before calling the remote API."
+    - upstream: "Swagger: DELETE /api/users/{id}"
+      output: "src/brain/services/index.ts"
+      evidence: "The service sends DELETE with the selected numeric or string user ID."
+upstream_artifacts_consumed:
+  T021:
+    - artifact: "User request and existing Swagger contract"
+      used_for: "Requested delete action and endpoint path/method."
+protocol_violation: false
+errors: []
+warnings:
+  - severity: "MEDIUM"
+    message: "No remote DELETE was sent; method and path are verified with mocked fetch only. Confirm on an isolated/non-production environment before using on production accounts."
+  - severity: "HIGH"
+    message: "User approval remains unavailable due to the backend database schema failure already observed."
+test_results:
+  focused:
+    command: "npx vitest run src/brain/lib/api.test.ts"
+    passed: 40
+    failed: 0
+    skipped: 0
+    failures: []
+  build:
+    command: "npm run build"
+    passed: 1
+    failed: 0
+    skipped: 0
+    failures: []
+  type_check:
+    command: "npx tsc --noEmit"
+    passed: 1
+    failed: 0
+    skipped: 0
+    failures: []
+  lint:
+    command: "npx eslint src/brain/pages/EventPages.tsx src/brain/store/BrainStore.tsx src/brain/services/index.ts src/brain/lib/api.test.ts"
+    passed: 1
+    failed: 0
+    skipped: 0
+    failures: []
+  diff_check:
+    command: "git diff --check"
+    passed: 1
+    failed: 0
+    skipped: 0
+    failures: []

@@ -1,0 +1,535 @@
+metadata:
+  generated: "2026-10-06"
+  source_tasks: ".github/modernize/api-consumption/plan.md"
+  last_updated: "2026-10-06"
+
+summary:
+  total_tasks: 24
+  completed_tasks: 11
+  in_progress_tasks: 3
+  pending_tasks: 9
+  completion_percentage: 45.83
+
+tasks:
+  - task_id: "T001"
+    description: "Confirmar os 39 métodos exclusivamente com a API remota e registar o contrato."
+    status: "in-progress"
+    implementation:
+      files_changed: []
+    verification:
+      build_passed: false
+      test_results:
+        command: "Não executado"
+        passed: 0
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Em progresso: o OpenAPI remoto foi consultado e os campos obrigatórios expostos por alguns erros 422 foram registados. Faltam exemplos de pedidos válidos, tipos, enumerações, respostas e autenticação."
+    upstream_trace:
+      plan_item: "1.1"
+      requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+      full_trace: "Todos os requisitos → Phase-1.1 → T001"
+  - task_id: "T002"
+    description: "Confirmar ambiente remoto de teste isolado e manter Express fora do escopo."
+    status: "blocked"
+    implementation:
+      files_changed: []
+    verification:
+      build_passed: false
+      test_results:
+        command: "Não executado"
+        passed: 0
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "O plano exclui Express. Falta confirmar a URL remota não produtiva e o mecanismo de acesso de teste. Não alterar os registos CON-4034 e LEAD-4692, cuja criação o utilizador confirmou como intencional."
+    upstream_trace:
+      plan_item: "1.1"
+      requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+      full_trace: "Todos os requisitos → Phase-1.1 → T002"
+  - task_id: "T003"
+    description: "Endurecer cliente HTTP e configuração para a API remota."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/lib/api.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados erros HTTP tipados, parsing explícito de respostas, headers JSON/Accept e normalização da base URL."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "added"
+              description: "Testes de sucesso JSON, erro HTTP, 204, corpo vazio inesperado e JSON malformado."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 5
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Também passaram npm run build e npx eslint src/brain/lib/api.ts src/brain/lib/api.test.ts."
+    upstream_trace:
+      plan_item: "2.1"
+      requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+      full_trace: "Todos os requisitos → Phase-2.1 → T003 → src/brain/lib/api.ts"
+  - task_id: "T004"
+    description: "Completar tipos de request/response confirmados."
+    status: "in-progress"
+    implementation:
+      files_changed:
+        - file: "src/brain/types.ts"
+          changes:
+            - change_type: "modified"
+              description: "Alinhada a nulabilidade de campos opcionais de entidades com respostas observadas na API remota."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npm run build"
+        passed: 1
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Nulabilidade observada foi incorporada; payloads de escrita e metadados do tipo BrainUser ainda precisam de definição."
+    upstream_trace:
+      plan_item: "2.2"
+      requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+      full_trace: "Todos os requisitos → Phase-2.2 → T004 (parcial)"
+  - task_id: "T017"
+    description: "Ligar leitura e gravação da avaliação interna."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "added"
+              description: "Adicionado saveEvaluation usando POST conforme contrato remoto."
+            - change_type: "added"
+              description: "Adicionado getEvaluation e validação da estrutura e do intervalo das pontuações."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "A avaliação é carregada por GET dedicado e gravada por POST; o estado usa a resposta actualizada."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Testes cobrem GET, POST, paths, payload e rejeição de pontuações fora de 1–5."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 39
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Contrato GET/POST e formato de resposta foram observados no Swagger. Testes locais usam fetch simulado; nenhuma escrita remota foi executada."
+    upstream_trace:
+      plan_item: "6.1"
+      requirements: ["REQ-API-007"]
+      full_trace: "REQ-API-007 → Phase-6.1 → T017"
+  - task_id: "T009"
+    description: "Ligar o CRUD de contactos na interface e nas camadas de serviço/estado."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/types.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionado tipo de entrada para criação simples de contacto com os campos obrigatórios observados."
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados GET de coleção, GET por ID e POST de contacto."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "O bootstrap carrega contactos pelo endpoint dedicado e expõe consulta individual e criação."
+        - file: "src/brain/pages/ContactsPage.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Ligadas listagem, detalhe individual e formulário de criação simples, preservando o fluxo composto contacto+lead."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados testes de transporte para os cinco métodos de contactos e para DELETE sem corpo."
+        - file: "src/brain/lib/api.ts"
+          changes:
+            - change_type: "modified"
+              description: "DELETE aceita resposta 200 vazia, conforme possível resposta do endpoint; GET continua a exigir corpo quando esperado."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 13
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Build, lint e testes passaram. PUT envia os campos editáveis conhecidos em camelCase, mas o corpo válido não foi demonstrado no Swagger. DELETE aceita corpo vazio e avisa que efeitos em relações não estão especificados. Nenhuma escrita remota foi executada."
+    upstream_trace:
+      plan_item: "4.1"
+      requirements: ["REQ-API-002"]
+      full_trace: "REQ-API-002 → Phase-4.1 → T009"
+  - task_id: "T012"
+    description: "Implementar operações de listagem, detalhe, criação, edição e remoção de leads."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/types.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados tipos de entrada de escrita e detalhe da lead com contacto/interacções."
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados GET/POST para coleção e GET/PUT/DELETE por ID."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Bootstrap usa GET /api/leads e store expõe detalhe e CRUD com refresh."
+        - file: "src/brain/pages/LeadsPage.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Ligações de criação e remoção com selecção de contacto e confirmação."
+        - file: "src/brain/pages/LeadDetailPage.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Detalhe carrega lead por ID e oferece edição e remoção com confirmação."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados testes de GET coleção/detalhe e POST/PUT/DELETE."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 19
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Build, testes e lint passam. A forma do corpo PUT e cascata DELETE carecem de validação remota segura; nenhuma mutação remota foi feita."
+    upstream_trace:
+      plan_item: "4.2"
+      requirements: ["REQ-API-003"]
+      full_trace: "REQ-API-003 → Phase-4.2 → T012"
+  - task_id: "T013"
+    description: "Ligar mudança de estado de lead por endpoint PATCH."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "modified"
+              description: "Mudança de estado delega em PATCH /api/leads/{id}/status."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Store chama o serviço e reconcilia o estado após sucesso."
+        - file: "src/brain/pages/LeadDetailPage.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Pipeline permite alterar estado e informa falhas/sucesso."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Teste verifica PATCH, caminho e corpo de status."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 19
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Endpoint exercitado por teste unitário com fetch simulado; não foi chamado remotamente."
+    upstream_trace:
+      plan_item: "4.2"
+      requirements: ["REQ-API-003"]
+      full_trace: "REQ-API-003 → Phase-4.2 → T013"
+  - task_id: "T014"
+    description: "Ligar listagem global e criação de interacções, incluindo criação por lead."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/types.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados tipos dos payloads de criação global e associada a lead."
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "added"
+              description: "Implementados GET/POST /api/interactions e POST /api/leads/{leadId}/interactions."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Bootstrap carrega interacções pelo endpoint dedicado e expõe os dois fluxos de criação."
+        - file: "src/brain/pages/CapturePages.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Página global lista interacções remotas e permite registar uma associada a uma lead."
+        - file: "src/brain/pages/LeadDetailPage.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Cronologia continua a criar interacções pelo endpoint específico da lead."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados testes para GET e os dois métodos POST de interacções."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 22
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "ESLint sem erros; warning Fast Refresh já existente em BrainStore.tsx. Testes usam fetch simulado; não houve escrita remota. O corpo de POST específico por lead permanece sem exemplo válido no Swagger."
+    upstream_trace:
+      plan_item: "5.1"
+      requirements: ["REQ-API-004"]
+      full_trace: "REQ-API-004 → Phase-5.1 → T014"
+  - task_id: "T015"
+    description: "Ligar listagem, criação, actualização e conclusão de follow-ups."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/types.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados tipos de criação e actualização do estado dos follow-ups."
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "modified"
+              description: "Ligados GET/POST/PUT/PATCH nos endpoints dedicados de follow-ups."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Carregamento dedicado remoto e mutações seguidas de refresh."
+        - file: "src/brain/pages/CommercialPages.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Página apresenta follow-ups reais, cria e altera estado, e conclui pelo endpoint remoto."
+        - file: "src/brain/pages/DashboardPage.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Conclusão de follow-up no dashboard usa o endpoint remoto sem payload inventado."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Adicionados testes dos métodos e payloads de follow-up."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 26
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "GET remoto confirmado com 20 registos. Testes locais usam fetch simulado. ESLint sem erros, apenas aviso Fast Refresh preexistente. O utilizador confirmou que o PUT do Swagger não envia corpo; o comportamento exacto da actualização continua sem detalhe no contrato."
+    upstream_trace:
+      plan_item: "5.1"
+      requirements: ["REQ-API-005"]
+      full_trace: "REQ-API-005 → Phase-5.1 → T015"
+  - task_id: "T016"
+    description: "Implementar listagem e criação de reuniões."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "added"
+              description: "Adicionados getMeetings e createMeeting, incluindo ownerId requerido pela API."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Reuniões carregadas exclusivamente via endpoint dedicado; criação inclui ownerId autenticado."
+        - file: "src/brain/pages/CommercialPages.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Página de reuniões apresenta os dados carregados do serviço e cria pelo endpoint remoto."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Testes confirmam GET dedicado e POST com ownerId."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 7
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "GET remoto confirmado com 9 reuniões; testes locais usam fetch simulado. POST não foi executado remotamente. O contrato de campos obrigatórios veio do erro 422."
+    upstream_trace:
+      plan_item: "5.1"
+      requirements: ["REQ-API-006"]
+      full_trace: "REQ-API-006 → Phase-5.1 → T016"
+  - task_id: "T018"
+    description: "Ligar listagem e submissão de feedback de visitantes."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "modified"
+              description: "Serviço expõe GET e POST /api/feedback."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Feedback é carregado pelo endpoint dedicado e submissões usam o serviço."
+        - file: "src/brain/pages/EventPages.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Página mostra registos remotos, calcula médias dinâmicas e submete quatro ratings obrigatórios."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Testes cobrem GET e POST feedback com método, path e payload."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 33
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "GET remoto confirmado com 15 registos. Nenhum POST remoto executado."
+    upstream_trace:
+      plan_item: "6.1"
+      requirements: ["REQ-API-007"]
+      full_trace: "REQ-API-007 → Phase-6.1 → T018"
+  - task_id: "T019"
+    description: "Ligar leitura e marcação como lida de notificações."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "modified"
+              description: "Expostos GET /api/notifications e PATCH /api/notifications/{id}/read."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Notificações vêm do endpoint dedicado; após PATCH bem-sucedido, o estado local reflecte read=true."
+        - file: "src/brain/components/AppShell.tsx"
+          changes:
+            - change_type: "modified"
+              description: "O clique aguarda a marcação remota e apresenta erros sem navegação prematura."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Testes verificam GET/PATCH, paths e resposta do endpoint de notificação."
+    verification:
+      build_passed: false
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 36
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "Build passou; 36 testes passaram. ESLint sem erros, com um aviso Fast Refresh já existente. Nenhuma escrita remota foi executada."
+    upstream_trace:
+      plan_item: "7.1"
+      requirements: ["REQ-API-008"]
+      full_trace: "REQ-API-008 → Phase-7.1 → T019"
+  - task_id: "T020"
+    description: "Ligar leitura, criação, actualização e remoção de soluções."
+    status: "completed"
+    implementation:
+      files_changed:
+        - file: "src/brain/services/index.ts"
+          changes:
+            - change_type: "modified"
+              description: "Serviço expõe GET/POST/PATCH/DELETE do catálogo de soluções."
+        - file: "src/brain/store/BrainStore.tsx"
+          changes:
+            - change_type: "modified"
+              description: "Soluções carregadas por GET dedicado e mutações delegadas ao serviço."
+        - file: "src/brain/pages/CapturePages.tsx"
+          changes:
+            - change_type: "modified"
+              description: "A listagem e acções CRUD reflectem catálogo remoto e mantêm confirmação antes de eliminar."
+        - file: "src/brain/lib/api.test.ts"
+          changes:
+            - change_type: "modified"
+              description: "Testes cobrem GET/POST/PATCH/DELETE com paths e payloads."
+    verification:
+      build_passed: true
+      test_results:
+        command: "npx vitest run src/brain/lib/api.test.ts"
+        passed: 33
+        failed: 0
+        skipped: 0
+        failures: []
+      notes: "GET remoto confirmado com 6 soluções. Nenhuma mutação remota executada."
+    upstream_trace:
+      plan_item: "7.1"
+      requirements: ["REQ-API-009"]
+      full_trace: "REQ-API-009 → Phase-7.1 → T020"
+
+pending_tasks:
+  - task_id: "T005"
+    description: "Expor todos os métodos REST em serviços por domínio."
+    blocked_by: ["T001", "T004"]
+    priority: "P1"
+  - task_id: "T006"
+    description: "Coordenar serviços, erros e carregamento no BrainStore."
+    blocked_by: ["T005"]
+    priority: "P1"
+  - task_id: "T007"
+    description: "Ligar autenticação e registo ao contrato remoto."
+    blocked_by: ["T001", "T002"]
+    priority: "P1"
+  - task_id: "T008"
+    description: "Integrar carregamento e retry do estado inicial."
+    blocked_by: ["T001", "T005"]
+    priority: "P1"
+  - task_id: "T010"
+    description: "Ligar captura rápida e completa."
+    blocked_by: ["T001", "T005"]
+    priority: "P1"
+  - task_id: "T011"
+    description: "Ligar captura QR pública."
+    blocked_by: ["T001", "T005"]
+    priority: "P1"
+  - task_id: "T019"
+    description: "Ligar notificações."
+    blocked_by: ["T001", "T005"]
+    priority: "P2"
+  - task_id: "T021"
+    description: "Completar aprovação administrativa; listagem e remoção com confirmação já estão ligadas."
+    blocked_by: ["T001", "T005"]
+    priority: "P2"
+  - task_id: "T022"
+    description: "Criar fluxos Playwright para os cenários críticos."
+    blocked_by: ["T002", "T007", "T010", "T013", "T015", "T016", "T018", "T019", "T021"]
+    priority: "P1"
+  - task_id: "T023"
+    description: "Verificar cobertura dos 39 métodos."
+    blocked_by: ["T005", "T009", "T010", "T011", "T012", "T013", "T014", "T015", "T016", "T017", "T018", "T019", "T020", "T021"]
+    priority: "P1"
+  - task_id: "T024"
+    description: "Executar build, lint e validação E2E."
+    blocked_by: ["T022", "T023"]
+    priority: "P1"
+
+untracked_changes: []
+
+traceability_chain:
+  - chain_id: "TRACE-API-BASE"
+    requirement: "REQ-API-001 to REQ-API-011"
+    plan_phase: "Phase-2"
+    plan_item: "2.1"
+    tasks: ["T003"]
+    files:
+      - "src/brain/lib/api.ts"
+      - "src/brain/lib/api.test.ts"
+    status: "partial"
+
+validation:
+  passed: true
+  errors: []
+  warnings:
+    - "T001 aguarda contrato remoto completo; T002 aguarda ambiente de teste seguro; T004 e T017 permanecem em progresso e as restantes tarefas continuam pendentes."
+  blocking_issues:
+    - "Falta o contrato completo de request/response e autenticação da API remota."
+    - "Falta confirmar ambiente remoto não produtivo para validar operações de escrita."

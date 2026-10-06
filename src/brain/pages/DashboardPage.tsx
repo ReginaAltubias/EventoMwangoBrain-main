@@ -38,7 +38,7 @@ export default function DashboardPage(){
   const convertedCount=b.leads.filter(l=>l.status==="Convertido").length;
 
   return <>
-    <PageTitle title="Angola Hub Summit 2026" subtitle="Acompanhe contactos, interesses e oportunidades geradas durante a participação da Mwango Brain." actions={<>
+    <PageTitle title="Eventos MwangoBrain 2026" subtitle="Acompanhe contactos, interesses e oportunidades geradas durante a participação da Mwango Brain." actions={<>
       <Button onClick={()=>setQuick(true)}><Plus/> Registar contacto</Button>
       <Button variant="outline" onClick={()=>setQr(true)}>Mostrar QR Code</Button>
       <Button variant="outline" onClick={exportCsv}><Download/> Exportar relatório</Button>
@@ -118,7 +118,7 @@ export default function DashboardPage(){
             {pending.slice(0,4).map(f=>{
               const l=b.leads.find(x=>x.id===f.leadId),c=getContact(l?.contactId??"");
               return <label key={f.id} className="flex items-start gap-3 rounded-md p-2 hover:bg-muted">
-                <Checkbox onCheckedChange={()=>b.completeFollowUp(f.id,"Concluído a partir do dashboard").catch(err=>toast.error(err instanceof Error?err.message:"Erro ao concluir follow-up"))}/>
+                <Checkbox onCheckedChange={checked=>{if(checked===true)b.completeFollowUp(f.id).then(()=>toast.success("Follow-up concluído")).catch(err=>toast.error(err instanceof Error?err.message:"Erro ao concluir follow-up"))}}/>
                 <span><strong className="block text-sm">{c?.fullName}</strong><small className="text-muted-foreground">{f.action}</small></span>
               </label>;
             })}

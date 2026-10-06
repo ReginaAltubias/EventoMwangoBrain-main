@@ -105,8 +105,8 @@ publicRouter.post(
       void sendSms({
         to: data.whatsapp,
         body: demo
-          ? `Olá ${data.fullName}! Obrigado por visitar a Mwango Brain no Angola Hub Summit 2026. A nossa equipa vai contactá-lo(a) para agendar a demonstração. — mwangobrain.com`
-          : `Olá ${data.fullName}! Obrigado por visitar a Mwango Brain no Angola Hub Summit 2026. Entraremos em contacto consigo em breve. — mwangobrain.com`,
+          ? `Olá ${data.fullName}! Obrigado por visitar a Mwango Brain no Eventos MwangoBrain 2026. A nossa equipa vai contactá-lo(a) para agendar a demonstração. — mwangobrain.com`
+          : `Olá ${data.fullName}! Obrigado por visitar a Mwango Brain no Eventos MwangoBrain 2026. Entraremos em contacto consigo em breve. — mwangobrain.com`,
       });
     }
 

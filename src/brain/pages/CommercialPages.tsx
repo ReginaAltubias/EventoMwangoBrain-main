@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CalendarDays,CheckCircle2,Clock,Plus,TriangleAlert } from "lucide-react";
+import { CalendarDays,CheckCircle2,Clock,Plus,RefreshCw,TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle } from "@/components/ui/dialog";
@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from "@/components/ui/select";
 import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { KpiCard,PageTitle,SolutionChip } from "../components/Common";
 import { useBrain } from "../store/BrainStore";
 import type { Meeting,NextAction } from "../types";
@@ -17,18 +16,48 @@ const nextActions:NextAction[]=["Ligar","Contactar via WhatsApp","Enviar apresen
 /* ─── Follow-ups ─────────────────────────────────────────────────────────── */
 export function FollowUpsPage(){
   const b=useBrain();
-  const [finish,setFinish]=useState<string|null>(null);
-  const [result,setResult]=useState("");
   const [creating,setCreating]=useState(false);
+  const [saving,setSaving]=useState(false);
+  const [updating,setUpdating]=useState<string|null>(null);
   const [newLeadId,setNewLeadId]=useState("");
   const [newAction,setNewAction]=useState<NextAction>("Ligar");
   const [newDate,setNewDate]=useState("");
 
-  const createFollowUp=()=>{
+  const createFollowUp=async()=>{
     if(!newLeadId||!newDate)return;
-    b.addFollowUp({leadId:newLeadId,action:newAction,dueDate:newDate})
-      .then(()=>{setCreating(false);setNewLeadId("");setNewDate("");toast.success("Follow-up registado")})
-      .catch(err=>toast.error(err instanceof Error?err.message:"Erro ao registar follow-up"));
+    setSaving(true);
+    try{
+      await b.addFollowUp({leadId:newLeadId,action:newAction,dueDate:newDate});
+      setCreating(false);
+      setNewLeadId("");
+      setNewDate("");
+      toast.success("Follow-up registado");
+    }catch(err){
+      toast.error(err instanceof Error?err.message:"Erro ao registar follow-up");
+    }finally{
+      setSaving(false);
+    }
+  };
+
+  const completeFollowUp=async(id:string)=>{
+    try{
+      await b.completeFollowUp(id);
+      toast.success("Follow-up concluído");
+    }catch(err){
+      toast.error(err instanceof Error?err.message:"Erro ao concluir follow-up");
+    }
+  };
+
+  const updateFollowUpStatus=async(id:string)=>{
+    setUpdating(id);
+    try{
+      await b.updateFollowUp(id);
+      toast.success("Estado do follow-up actualizado");
+    }catch(err){
+      toast.error(err instanceof Error?err.message:"Erro ao actualizar follow-up");
+    }finally{
+      setUpdating(null);
+    }
   };
 
   const now=new Date();
@@ -61,28 +90,20 @@ export function FollowUpsPage(){
                 {l&&<SolutionChip value={l.mainSolution}/>}
                 <span className="text-xs text-muted-foreground">{new Date(f.dueDate).toLocaleDateString("pt-PT",{day:"2-digit",month:"short",year:"numeric"})}</span>
                 <span className="text-sm">{f.action}</span>
-                {f.status!=="Concluído"
-                  ?<Button size="sm" variant="outline" onClick={()=>setFinish(f.id)}><CheckCircle2/> Concluir</Button>
-                  :<span className="text-xs text-success">Concluído</span>}
+                <div className="flex flex-wrap items-center gap-2">
+                  {f.status!=="Concluído"
+                    ?<Button size="sm" variant="outline" disabled={updating===f.id} onClick={()=>completeFollowUp(f.id)}><CheckCircle2/> Concluir</Button>
+                    :<span className="text-xs text-success">Concluído</span>}
+                  <Button size="sm" variant="ghost" disabled={updating===f.id} onClick={()=>updateFollowUpStatus(f.id)} aria-label="Actualizar estado do follow-up">
+                    <RefreshCw className={updating===f.id?"animate-spin":""}/>
+                  </Button>
+                </div>
               </div>;
             })}
           </div>
         </TabsContent>
       ))}
     </Tabs>
-
-    {/* Diálogo — concluir follow-up */}
-    <Dialog open={!!finish} onOpenChange={()=>setFinish(null)}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Concluir follow-up</DialogTitle>
-          <DialogDescription>Registe o resultado para adicionar à linha de actividade do lead.</DialogDescription>
-        </DialogHeader>
-        <Label>Resultado</Label>
-        <Textarea value={result} onChange={e=>setResult(e.target.value)} placeholder="Ex.: Apresentação enviada e demonstração confirmada."/>
-        <Button onClick={()=>{if(finish&&result){b.completeFollowUp(finish,result).then(()=>{setFinish(null);setResult("");toast.success("Follow-up concluído")}).catch(err=>toast.error(err instanceof Error?err.message:"Erro ao concluir follow-up"))}}}>Guardar resultado</Button>
-      </DialogContent>
-    </Dialog>
 
     {/* Diálogo — registar follow-up */}
     <Dialog open={creating} onOpenChange={setCreating}>
@@ -114,7 +135,7 @@ export function FollowUpsPage(){
             <Label>Data prevista</Label>
             <Input type="date" value={newDate} onChange={e=>setNewDate(e.target.value)}/>
           </div>
-          <Button className="w-full" disabled={!newLeadId||!newDate} onClick={createFollowUp}>Guardar follow-up</Button>
+          <Button className="w-full" disabled={!newLeadId||!newDate||saving} onClick={createFollowUp}>{saving?"A guardar…":"Guardar follow-up"}</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -147,7 +168,7 @@ export function MeetingsPage(){
   };
 
   return <>
-    <PageTitle title="Reuniões" subtitle="Agenda comercial do Angola Hub Summit 2026." actions={<Button onClick={()=>setCreating(true)}><Plus/> Nova reunião</Button>}/>
+    <PageTitle title="Reuniões" subtitle="Agenda comercial do Eventos MwangoBrain 2026." actions={<Button onClick={()=>setCreating(true)}><Plus/> Nova reunião</Button>}/>
 
     <Tabs value={view} onValueChange={setView}>
       <TabsList>

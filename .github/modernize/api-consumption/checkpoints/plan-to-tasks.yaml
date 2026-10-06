@@ -1,0 +1,179 @@
+metadata:
+  generated: "2026-10-06"
+  source_plan: ".github/modernize/api-consumption/plan.md"
+  target_tasks: "Plano de tarefas inline em .github/modernize/api-consumption/plan.md"
+
+summary:
+  total_plan_items: 10
+  covered_plan_items: 10
+  missing_plan_items: 0
+  coverage_percentage: 100.0
+  total_tasks_generated: 24
+  orphan_tasks: 0
+
+phases:
+  - phase_id: "Phase-1"
+    phase_name: "Preparação"
+    items:
+      - item_id: "1.1"
+        description: "Confirmar contrato e ambientes"
+        tasks:
+          - task_id: "T001"
+            description: "Comparar os 39 métodos do OpenAPI com as APIs alvo."
+          - task_id: "T002"
+            description: "Excluir Express local e confirmar ambiente remoto seguro de teste."
+        notes: "Gate obrigatório antes de implementar schemas não publicados."
+  - phase_id: "Phase-2"
+    phase_name: "Base comum"
+    items:
+      - item_id: "2.1"
+        description: "Endurecer cliente HTTP e configuração"
+        tasks:
+          - task_id: "T003"
+            description: "Uniformizar transporte, parsing, erro e configuração."
+          - task_id: "T006"
+            description: "Coordenar serviços, erros e carregamento no BrainStore."
+        notes: ""
+      - item_id: "2.2"
+        description: "Tipar contratos e criar serviços por domínio"
+        tasks:
+          - task_id: "T004"
+            description: "Definir tipos confirmados de domínio e API."
+          - task_id: "T005"
+            description: "Expor os 39 métodos em serviços tipados por domínio."
+          - task_id: "T006"
+            description: "Delegar operações do estado para os serviços."
+        notes: ""
+  - phase_id: "Phase-3"
+    phase_name: "US1: acesso e carregamento inicial"
+    items:
+      - item_id: "3.1"
+        description: "Autenticar, registar e carregar estado"
+        tasks:
+          - task_id: "T007"
+            description: "Ligar autenticação, registo e sessão."
+          - task_id: "T008"
+            description: "Integrar carregamento/retry de estado inicial."
+        notes: ""
+  - phase_id: "Phase-4"
+    phase_name: "US2: contactos e leads"
+    items:
+      - item_id: "4.1"
+        description: "Consumir contactos e captura pública"
+        tasks:
+          - task_id: "T009"
+            description: "Ligar CRUD básico de contactos."
+          - task_id: "T010"
+            description: "Ligar captura rápida e completa."
+          - task_id: "T011"
+            description: "Ligar captura QR pública."
+        notes: ""
+      - item_id: "4.2"
+        description: "Consumir leads, detalhe e estado"
+        tasks:
+          - task_id: "T012"
+            description: "Ligar operações CRUD e detalhe de lead."
+          - task_id: "T013"
+            description: "Ligar alteração de estado."
+        notes: ""
+  - phase_id: "Phase-5"
+    phase_name: "US3: actividade comercial"
+    items:
+      - item_id: "5.1"
+        description: "Consumir interacções, follow-ups e reuniões"
+        tasks:
+          - task_id: "T014"
+            description: "Ligar três operações de interacções."
+          - task_id: "T015"
+            description: "Ligar quatro operações de follow-up."
+          - task_id: "T016"
+            description: "Ligar listagem e criação de reuniões."
+        notes: ""
+  - phase_id: "Phase-6"
+    phase_name: "US4: avaliação e feedback"
+    items:
+      - item_id: "6.1"
+        description: "Consumir avaliação interna e feedback de visitantes"
+        tasks:
+          - task_id: "T017"
+            description: "Ligar leitura/gravação da avaliação."
+          - task_id: "T018"
+            description: "Ligar listagem/submissão de feedback."
+        notes: ""
+  - phase_id: "Phase-7"
+    phase_name: "US5: administração, notificações e catálogo"
+    items:
+      - item_id: "7.1"
+        description: "Consumir notificações, soluções e utilizadores"
+        tasks:
+          - task_id: "T019"
+            description: "Ligar notificações."
+          - task_id: "T020"
+            description: "Ligar catálogo de soluções."
+          - task_id: "T021"
+            description: "Ligar gestão de utilizadores."
+        notes: ""
+  - phase_id: "Phase-8"
+    phase_name: "Consistência e validação"
+    items:
+      - item_id: "8.1"
+        description: "Validar cobertura, ambientes e fluxos"
+        tasks:
+          - task_id: "T022"
+            description: "Criar fluxos Playwright."
+          - task_id: "T023"
+            description: "Verificar cobertura dos 39 métodos."
+          - task_id: "T024"
+            description: "Executar build, lint e validação E2E."
+        notes: ""
+
+missing_plan_items: []
+orphan_tasks: []
+
+upstream_trace:
+  - plan_item: "1.1"
+    source_requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+    tasks: ["T001", "T002"]
+    full_trace: "Todos os requisitos → Phase-1.1 → T001,T002"
+  - plan_item: "2.1"
+    source_requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+    tasks: ["T003", "T006"]
+    full_trace: "Todos os requisitos → Phase-2.1 → T003,T006"
+  - plan_item: "2.2"
+    source_requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+    tasks: ["T004", "T005", "T006"]
+    full_trace: "Todos os requisitos → Phase-2.2 → T004,T005,T006"
+  - plan_item: "3.1"
+    source_requirements: ["REQ-API-001", "REQ-API-011"]
+    tasks: ["T007", "T008"]
+    full_trace: "REQ-API-001,REQ-API-011 → Phase-3.1 → T007,T008"
+  - plan_item: "4.1"
+    source_requirements: ["REQ-API-002"]
+    tasks: ["T009", "T010", "T011"]
+    full_trace: "REQ-API-002 → Phase-4.1 → T009,T010,T011"
+  - plan_item: "4.2"
+    source_requirements: ["REQ-API-003"]
+    tasks: ["T012", "T013"]
+    full_trace: "REQ-API-003 → Phase-4.2 → T012,T013"
+  - plan_item: "5.1"
+    source_requirements: ["REQ-API-004", "REQ-API-005", "REQ-API-006"]
+    tasks: ["T014", "T015", "T016"]
+    full_trace: "REQ-API-004,REQ-API-005,REQ-API-006 → Phase-5.1 → T014,T015,T016"
+  - plan_item: "6.1"
+    source_requirements: ["REQ-API-007"]
+    tasks: ["T017", "T018"]
+    full_trace: "REQ-API-007 → Phase-6.1 → T017,T018"
+  - plan_item: "7.1"
+    source_requirements: ["REQ-API-008", "REQ-API-009", "REQ-API-010"]
+    tasks: ["T019", "T020", "T021"]
+    full_trace: "REQ-API-008,REQ-API-009,REQ-API-010 → Phase-7.1 → T019,T020,T021"
+  - plan_item: "8.1"
+    source_requirements: ["REQ-API-001", "REQ-API-002", "REQ-API-003", "REQ-API-004", "REQ-API-005", "REQ-API-006", "REQ-API-007", "REQ-API-008", "REQ-API-009", "REQ-API-010", "REQ-API-011"]
+    tasks: ["T022", "T023", "T024"]
+    full_trace: "Todos os requisitos → Phase-8.1 → T022,T023,T024"
+
+validation:
+  passed: true
+  errors: []
+  warnings:
+    - "O plano e a lista de tarefas são o mesmo artefacto; referências a tasks apontam para a secção inline."
