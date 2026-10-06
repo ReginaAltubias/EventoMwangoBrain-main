@@ -15,7 +15,7 @@ Usage:
     python3 scripts/sync_admin_divisions.py --file <xlsx>       # custom file
 
 Requires env vars: PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE
-(already provided in Lovable Cloud sandbox).
+
 """
 from __future__ import annotations
 
